@@ -34,7 +34,7 @@ categoryTitle: Overview
 ## Usage
 
 ```typescript
-import { parseMarkdownDocs, organizeSidebar } from "@anthropic/docs-viewer/parser";
+import { parseMarkdownDocs, organizeSidebar } from "@jestrux/docs-viewer/parser";
 
 const files = [
   { path: "overview/intro.md", content: "---\nid: intro\n..." },

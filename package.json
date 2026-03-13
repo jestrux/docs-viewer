@@ -1,5 +1,5 @@
 {
-  "name": "@anthropic/docs-viewer",
+  "name": "@jestrux/docs-viewer",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",

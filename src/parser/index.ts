@@ -151,6 +151,12 @@ function nodeToBlock(node: MdastNode): ContentBlock | null {
       };
     }
 
+    case "html": {
+      const html = node.value ?? "";
+      if (!html.trim()) return null;
+      return { type: "text", content: html };
+    }
+
     default:
       return null;
   }
