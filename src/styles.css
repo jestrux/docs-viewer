@@ -1,0 +1,31 @@
+/* Sugar High syntax highlighting - dark theme */
+:root {
+  --sh-class: #e5c07b;
+  --sh-identifier: #e06c75;
+  --sh-sign: #abb2bf;
+  --sh-property: #61afef;
+  --sh-entity: #98c379;
+  --sh-jsxliterals: #56b6c2;
+  --sh-string: #98c379;
+  --sh-keyword: #c678dd;
+  --sh-comment: #5c6370;
+}
+
+[data-sh="comment"] {
+  font-style: italic;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
