@@ -400,15 +400,15 @@ function CommandPaletteContent({
     ? hasEntities ? history.slice(0, 3) : history
     : [];
 
-  const allPages = useMemo(() =>
-    categories.flatMap((cat) =>
-      cat.sections.map((sec) => ({
+  const rootNavPages = useMemo(() =>
+    categories
+      .filter((cat) => cat.sections.length > 0)
+      .map((cat) => ({
         kind: "page" as const,
-        path: `${cat.id}/${sec.id}`,
-        label: sec.title,
-        categoryTitle: cat.title,
-      }))
-    ),
+        path: `${cat.id}/${cat.sections[0].id}`,
+        label: cat.title,
+        categoryTitle: cat.sections[0].title,
+      })),
     [categories]
   );
 
@@ -417,13 +417,13 @@ function CommandPaletteContent({
       const cappedHistory = hasEntities ? history.slice(0, 3) : history;
       return [
         ...cappedHistory.map((r) => ({ kind: "result" as const, result: r })),
+        ...rootNavPages,
         ...(entities ?? []).map((e) => ({
           kind: "entity" as const,
           path: e.path,
           label: e.label,
           description: e.description,
         })),
-        ...allPages,
       ];
     }
     return [
@@ -437,7 +437,7 @@ function CommandPaletteContent({
       ...results.map((r) => ({ kind: "result" as const, result: r })),
       ...(!queryIsQuestion && hasAiRow ? [{ kind: "ask-ai" as const }] : []),
     ];
-  }, [query, queryIsQuestion, entityMatches, results, hasAiRow, history, entities, hasEntities, allPages]);
+  }, [query, queryIsQuestion, entityMatches, results, hasAiRow, history, entities, hasEntities, rootNavPages]);
 
   // Section start indices for Option+Arrow jumping
   const sectionStarts = useMemo(() => {
@@ -445,8 +445,8 @@ function CommandPaletteContent({
       const cappedCount = hasEntities ? Math.min(history.length, 3) : history.length;
       const starts: number[] = [];
       if (history.length > 0) starts.push(0);
-      if (entities && entities.length > 0) starts.push(cappedCount);
-      if (allPages.length > 0) starts.push(cappedCount + (entities?.length ?? 0));
+      if (rootNavPages.length > 0) starts.push(cappedCount);
+      if (entities && entities.length > 0) starts.push(cappedCount + rootNavPages.length);
       return starts;
     }
     const starts: number[] = [];
@@ -456,7 +456,7 @@ function CommandPaletteContent({
     if (results.length > 0) { starts.push(idx); idx += results.length; }
     if (!queryIsQuestion && hasAiRow) starts.push(idx);
     return starts;
-  }, [query, queryIsQuestion, entityMatches.length, results.length, hasAiRow, history.length, entities, allPages.length, hasEntities]);
+  }, [query, queryIsQuestion, entityMatches.length, results.length, hasAiRow, history.length, entities, rootNavPages.length, hasEntities]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (mode === "answer") {
@@ -597,11 +597,49 @@ function CommandPaletteContent({
                 </div>
               )}
 
+              {rootNavPages.length > 0 && (
+                <div>
+                  <SectionLabel label="Navigation" />
+                  {rootNavPages.map((page, i) => {
+                    const idx = visibleHistory.length + i;
+                    return (
+                      <PaletteItem
+                        key={`nav-${i}`}
+                        isSelected={idx === selectedIndex}
+                        isFirstInSection={i === 0}
+                        onClick={() => handleEntityNavigate(page.path)}
+                        className="px-4 py-2.5"
+                      >
+                        <div className="flex items-center gap-2">
+                          <svg
+                            className="size-4 text-[var(--docs-muted-foreground)] shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          <div>
+                            <div className="text-[14px] font-medium text-[var(--docs-foreground)]">{page.label}</div>
+                            <div className="text-[12px] text-[var(--docs-muted-foreground)] mt-0.5">{page.categoryTitle}</div>
+                          </div>
+                        </div>
+                      </PaletteItem>
+                    );
+                  })}
+                </div>
+              )}
+
               {entities && entities.length > 0 && (
                 <div>
-                  <SectionLabel label="Quick jump" />
+                  <SectionLabel label="Quick Jump" />
                   {entities.map((entity, i) => {
-                    const idx = visibleHistory.length + i;
+                    const idx = visibleHistory.length + rootNavPages.length + i;
                     return (
                       <PaletteItem
                         key={`entity-default-${i}`}
@@ -641,47 +679,6 @@ function CommandPaletteContent({
                 </div>
               )}
 
-              {allPages.length > 0 && (
-                <div>
-                  <SectionLabel label="Pages" />
-                  {allPages.map((page, i) => {
-                    const idx = visibleHistory.length + (entities?.length ?? 0) + i;
-                    return (
-                      <PaletteItem
-                        key={`page-default-${i}`}
-                        isSelected={idx === selectedIndex}
-                        isFirstInSection={i === 0}
-                        onClick={() => handleEntityNavigate(page.path)}
-                        className="px-4 py-2.5"
-                      >
-                        <div className="flex items-center gap-2">
-                          <svg
-                            className="size-4 text-[var(--docs-muted-foreground)] shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                          <div>
-                            <div className="text-[14px] font-medium text-[var(--docs-foreground)]">
-                              {page.label}
-                            </div>
-                            <div className="text-[12px] text-[var(--docs-muted-foreground)] mt-0.5">
-                              {page.categoryTitle}
-                            </div>
-                          </div>
-                        </div>
-                      </PaletteItem>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           ) : displayItems.length === 0 ? (
             // ── No results ───────────────────────────────────────────────
