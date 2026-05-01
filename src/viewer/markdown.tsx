@@ -7,7 +7,7 @@ const INLINE_TOKEN =
 
 function renderInlineNodes(text: string, basePath: string): React.ReactNode[] {
   const parts = text.split(INLINE_TOKEN);
-  return parts.flatMap((part, i) => {
+  return parts.flatMap((part, i): React.ReactNode[] => {
     if (!part) return [];
 
     if (part.startsWith("**") && part.endsWith("**")) {
