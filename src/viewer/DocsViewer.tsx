@@ -18,6 +18,7 @@ export function DocsViewer() {
     sections: sidebarSections,
     categories,
     logo,
+    basePath = "",
   } = useDocs();
   const navigate = useNavigate();
   const { categoryId, sectionId } = useParams();
@@ -41,7 +42,7 @@ export function DocsViewer() {
 
   const handleSelectResult = (result: SearchResult) => {
     setIsCommandPaletteOpen(false);
-    navigate(`/${result.categoryId}/${result.sectionId}`);
+    navigate(`${basePath}/${result.categoryId}/${result.sectionId}`);
     if (result.subsectionId) {
       setTimeout(() => {
         const el = document.getElementById(`section-${result.subsectionId}`);
@@ -115,7 +116,7 @@ export function DocsViewer() {
   const selectSection = (catIndex: number, secIndex: number) => {
     const cat = categories[catIndex];
     const sec = cat.sections[secIndex];
-    navigate(`/${cat.id}/${sec.id}`);
+    navigate(`${basePath}/${cat.id}/${sec.id}`);
     setActiveSubSection(null);
   };
 
@@ -162,14 +163,14 @@ export function DocsViewer() {
           s.title.toLowerCase().includes(typeId.toLowerCase())
       );
       if (typeSection) {
-        navigate(`/types/${typeSection.id}`);
+        navigate(`${basePath}/types/${typeSection.id}`);
         return;
       }
     }
-    navigate("/types/types-overview");
+    navigate(`${basePath}/types/types-overview`);
   };
 
-  const handlePageLink = (path: string) => navigate(`/${path}`);
+  const handlePageLink = (path: string) => navigate(`${basePath}/${path}`);
 
   const linkPreviewPopover = useLinkPreview(
     categories,

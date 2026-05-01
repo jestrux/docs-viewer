@@ -62,4 +62,6 @@ export interface DocsConfig {
   defaultRoute?: string;
   /** Logo element to render in sidebar (optional, defaults to first letter of title) */
   logo?: React.ReactNode;
+  /** Base path prefix for all navigation (e.g. "/docs"). Defaults to "". */
+  basePath?: string;
 }
