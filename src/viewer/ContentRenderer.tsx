@@ -168,7 +168,7 @@ export function ContentRenderer({
         <ListTag
           className={`my-3 ml-4 space-y-1.5 list-outside ${
             block.ordered ? "list-decimal" : "list-disc"
-          } text-[14px] text-[var(--docs-muted-foreground)]`}
+          } text-[14px] text-[var(--docs-foreground)]`}
         >
           {block.items.map((item, i) => (
             <li
