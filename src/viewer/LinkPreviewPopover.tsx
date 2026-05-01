@@ -214,7 +214,7 @@ export function useLinkPreview(
       onMouseLeave={() => {
         leaveTimeoutRef.current = setTimeout(hidePreview, 150);
       }}
-      className="fixed z-50 w-[380px] bg-white rounded-xl shadow-xl border border-zinc-200 overflow-hidden transition-opacity duration-150 flex flex-col"
+      className="fixed z-50 w-[380px] bg-[var(--docs-card)] rounded-xl shadow-xl border border-[var(--docs-border)] overflow-hidden transition-opacity duration-150 flex flex-col"
       style={{
         top: position?.top ?? -9999,
         left: position?.left ?? -9999,
@@ -222,11 +222,11 @@ export function useLinkPreview(
         maxHeight: 320,
       }}
     >
-      <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50/80 flex-shrink-0">
-        <div className="text-[11px] text-zinc-400 mb-0.5">
+      <div className="px-4 py-3 border-b border-[var(--docs-border)] bg-[var(--docs-muted)] flex-shrink-0">
+        <div className="text-[11px] text-[var(--docs-muted-foreground)] mb-0.5">
           {preview.data.categoryTitle}
         </div>
-        <div className="text-[14px] font-semibold text-zinc-900">
+        <div className="text-[14px] font-semibold text-[var(--docs-foreground)]">
           {preview.data.subsectionTitle ?? preview.data.sectionTitle}
         </div>
       </div>
@@ -237,13 +237,13 @@ export function useLinkPreview(
           ))}
         </div>
       </div>
-      <div className="px-3 py-2 border-t border-zinc-100 bg-zinc-50/50 flex items-center justify-between flex-shrink-0">
-        <span className="text-[11px] text-zinc-400">
+      <div className="px-3 py-2 border-t border-[var(--docs-border)] bg-[var(--docs-muted)] flex items-center justify-between flex-shrink-0">
+        <span className="text-[11px] text-[var(--docs-muted-foreground)]">
           {preview.data.categoryTitle}
         </span>
         <button
           onClick={handleNavigate}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium text-[var(--docs-primary)] hover:opacity-80 hover:bg-[var(--docs-muted)] transition-colors"
         >
           Go to page
           <svg
@@ -262,6 +262,6 @@ export function useLinkPreview(
         </button>
       </div>
     </div>,
-    document.body
+    contentRef.current?.closest(".docs-root") ?? document.body
   );
 }

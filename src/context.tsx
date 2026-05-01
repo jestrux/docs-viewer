@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { DocsConfig, DocsCategory } from "./types";
 
 interface DocsContextValue extends DocsConfig {
@@ -15,11 +15,17 @@ export function DocsProvider({
   config: DocsConfig;
   children: ReactNode;
 }) {
-  const categories =
-    config.categories ?? config.sections.flatMap((s) => s.categories);
+  const value = useMemo<DocsContextValue>(
+    () => ({
+      ...config,
+      categories: config.categories ?? config.sections.flatMap((s) => s.categories),
+      basePath: config.basePath ?? "",
+    }),
+    [config]
+  );
 
   return (
-    <DocsContext.Provider value={{ ...config, categories, basePath: config.basePath ?? "" }}>
+    <DocsContext.Provider value={value}>
       {children}
     </DocsContext.Provider>
   );

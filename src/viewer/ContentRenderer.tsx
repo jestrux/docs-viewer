@@ -18,28 +18,28 @@ function renderInlineCode(
   );
   result = result.replace(
     /`([^`]+)`/g,
-    '<code class="px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-800 text-[13px] font-mono">$1</code>'
+    '<code class="px-1.5 py-0.5 rounded bg-[var(--docs-muted)] text-[var(--docs-foreground)] text-[13px] font-mono">$1</code>'
   );
   if (onPageLink) {
     result = result.replace(
       /\[\[link:([^\]|]+)\|([^\]]+)\]\]/g,
-      '<button class="page-link text-blue-600 hover:text-blue-800 hover:underline font-medium" data-path="$1">$2</button>'
+      '<button class="page-link hover:underline font-medium" style="color: var(--docs-primary)" data-path="$1">$2</button>'
     );
   } else {
     result = result.replace(
       /\[\[link:([^\]|]+)\|([^\]]+)\]\]/g,
-      '<span class="text-blue-600 font-medium">$2</span>'
+      '<span class="font-medium" style="color: var(--docs-primary)">$2</span>'
     );
   }
   if (onTypeLink) {
     result = result.replace(
       /\[\[types:([^\]]+)\]\]/g,
-      '<button class="type-link text-blue-600 hover:text-blue-800 hover:underline font-medium" data-type="$1">$1</button>'
+      '<button class="type-link hover:underline font-medium" style="color: var(--docs-primary)" data-type="$1">$1</button>'
     );
   } else {
     result = result.replace(
       /\[\[types:([^\]]+)\]\]/g,
-      '<code class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[13px] font-mono">$1</code>'
+      '<code class="px-1.5 py-0.5 rounded text-[13px] font-mono" style="color: var(--docs-primary); background: color-mix(in oklch, var(--docs-primary) 10%, var(--docs-background))">$1</code>'
     );
   }
   return result;
@@ -66,7 +66,7 @@ export function ContentRenderer({
     case "text":
       return (
         <p
-          className="text-[15px] text-zinc-700 leading-relaxed mb-4"
+          className="text-[15px] text-[var(--docs-foreground)] leading-relaxed mb-4"
           dangerouslySetInnerHTML={{
             __html: renderInlineCode(block.content, onTypeLink, onPageLink),
           }}
@@ -83,9 +83,9 @@ export function ContentRenderer({
 
     case "note": {
       const noteStyles = {
-        info: "border-sky-300 bg-sky-50/50 text-sky-900",
-        warning: "border-amber-300 bg-amber-50/50 text-amber-900",
-        tip: "border-emerald-300 bg-emerald-50/50 text-emerald-900",
+        info: "border-sky-300 bg-sky-50/50 text-sky-900 dark:border-sky-700/50 dark:bg-sky-950/30 dark:text-sky-300",
+        warning: "border-amber-300 bg-amber-50/50 text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-300",
+        tip: "border-emerald-300 bg-emerald-50/50 text-emerald-900 dark:border-emerald-700/50 dark:bg-emerald-950/30 dark:text-emerald-300",
       };
       const noteLabels = { info: "Note", warning: "Warning", tip: "Tip" };
       return (
@@ -108,12 +108,12 @@ export function ContentRenderer({
 
     case "concept":
       return (
-        <div className="my-5 p-4 rounded-lg bg-violet-50 border border-violet-100">
-          <div className="text-[13px] text-violet-600 font-medium mb-2">
+        <div className="my-5 p-4 rounded-lg bg-violet-50 border border-violet-100 dark:bg-violet-950/30 dark:border-violet-800/50">
+          <div className="text-[13px] text-violet-600 dark:text-violet-400 font-medium mb-2">
             Concept
           </div>
           <div
-            className="text-[14px] text-violet-900"
+            className="text-[14px] text-violet-900 dark:text-violet-300"
             dangerouslySetInnerHTML={{
               __html: renderInlineCode(block.content, onTypeLink, onPageLink),
             }}
@@ -124,14 +124,14 @@ export function ContentRenderer({
 
     case "table":
       return (
-        <div className="my-4 overflow-x-auto rounded-lg border border-zinc-200">
+        <div className="my-4 overflow-x-auto rounded-lg border border-[var(--docs-border)]">
           <table className="w-full text-[13px]">
-            <thead className="bg-zinc-50">
+            <thead className="bg-[var(--docs-muted)]">
               <tr>
                 {block.headers.map((h, i) => (
                   <th
                     key={i}
-                    className="text-left py-3 px-4 font-semibold text-zinc-700"
+                    className="text-left py-3 px-4 font-semibold text-[var(--docs-foreground)]"
                   >
                     {h}
                   </th>
@@ -140,11 +140,11 @@ export function ContentRenderer({
             </thead>
             <tbody>
               {block.rows.map((row, i) => (
-                <tr key={i} className="border-t border-zinc-100">
+                <tr key={i} className="border-t border-[var(--docs-border)]">
                   {row.map((cell, j) => (
                     <td
                       key={j}
-                      className="py-3 px-4 text-zinc-600"
+                      className="py-3 px-4 text-[var(--docs-muted-foreground)]"
                       dangerouslySetInnerHTML={{
                         __html: renderInlineCode(
                           cell,
@@ -168,7 +168,7 @@ export function ContentRenderer({
         <ListTag
           className={`my-3 ml-4 space-y-1.5 list-outside ${
             block.ordered ? "list-decimal" : "list-disc"
-          } text-[14px] text-zinc-600`}
+          } text-[14px] text-[var(--docs-muted-foreground)]`}
         >
           {block.items.map((item, i) => (
             <li
@@ -185,7 +185,7 @@ export function ContentRenderer({
 
     case "files":
       return (
-        <pre className="my-4 p-4 rounded-lg bg-zinc-50 border border-zinc-200 text-[13px] font-mono text-zinc-700 overflow-x-auto">
+        <pre className="my-4 p-4 rounded-lg bg-[var(--docs-muted)] border border-[var(--docs-border)] text-[13px] font-mono text-[var(--docs-muted-foreground)] overflow-x-auto">
           {block.tree}
         </pre>
       );
@@ -235,38 +235,38 @@ function PropsTable({
   };
 
   return (
-    <div className="my-4 overflow-x-auto rounded-lg border border-zinc-200">
+    <div className="my-4 overflow-x-auto rounded-lg border border-[var(--docs-border)]">
       <table className="w-full text-[13px]">
-        <thead className="bg-zinc-50">
+        <thead className="bg-[var(--docs-muted)]">
           <tr>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Prop
             </th>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Type
             </th>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Description
             </th>
           </tr>
         </thead>
         <tbody>
           {items.map((item, i) => (
-            <tr key={i} className="border-t border-zinc-100">
-              <td className="py-3 px-4 text-zinc-900 font-mono">
+            <tr key={i} className="border-t border-[var(--docs-border)]">
+              <td className="py-3 px-4 text-[var(--docs-foreground)] font-mono">
                 {item.name}
                 {item.required && (
                   <span className="text-red-500 ml-1">*</span>
                 )}
               </td>
               <td
-                className="py-3 px-4 text-zinc-600 font-mono text-[12px]"
+                className="py-3 px-4 text-[var(--docs-muted-foreground)] font-mono text-[12px]"
                 dangerouslySetInnerHTML={{
                   __html: renderInlineCode(item.type, onTypeLink, onPageLink),
                 }}
                 onClick={handleClick}
               />
-              <td className="py-3 px-4 text-zinc-600">{item.description}</td>
+              <td className="py-3 px-4 text-[var(--docs-muted-foreground)]">{item.description}</td>
             </tr>
           ))}
         </tbody>
@@ -297,33 +297,33 @@ function FieldsTable({
   };
 
   return (
-    <div className="my-4 overflow-x-auto rounded-lg border border-zinc-200">
+    <div className="my-4 overflow-x-auto rounded-lg border border-[var(--docs-border)]">
       <table className="w-full text-[13px]">
-        <thead className="bg-zinc-50">
+        <thead className="bg-[var(--docs-muted)]">
           <tr>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Field
             </th>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Type
             </th>
-            <th className="text-left py-3 px-4 font-semibold text-zinc-700">
+            <th className="text-left py-3 px-4 font-semibold text-[var(--docs-muted-foreground)]">
               Description
             </th>
           </tr>
         </thead>
         <tbody>
           {items.map((item, i) => (
-            <tr key={i} className="border-t border-zinc-100">
-              <td className="py-3 px-4 text-zinc-900 font-mono">{item.name}</td>
+            <tr key={i} className="border-t border-[var(--docs-border)]">
+              <td className="py-3 px-4 text-[var(--docs-foreground)] font-mono">{item.name}</td>
               <td
-                className="py-3 px-4 text-zinc-600 font-mono text-[12px]"
+                className="py-3 px-4 text-[var(--docs-muted-foreground)] font-mono text-[12px]"
                 dangerouslySetInnerHTML={{
                   __html: renderInlineCode(item.type, onTypeLink, onPageLink),
                 }}
                 onClick={handleClick}
               />
-              <td className="py-3 px-4 text-zinc-600">{item.description}</td>
+              <td className="py-3 px-4 text-[var(--docs-muted-foreground)]">{item.description}</td>
             </tr>
           ))}
         </tbody>

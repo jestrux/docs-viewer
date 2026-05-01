@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Section, SubSection } from "../types";
 import { useDocs } from "../context";
 import { ContentRenderer } from "./ContentRenderer";
+import { buildDerivedThemeCSS } from "./theme";
 import {
   createSearchInstance,
   buildSectionMap,
@@ -19,7 +20,10 @@ export function DocsViewer() {
     categories,
     logo,
     basePath = "",
+    theme,
   } = useDocs();
+
+  const themeCSS = useMemo(() => theme ? buildDerivedThemeCSS(theme) : "", [theme]);
   const navigate = useNavigate();
   const { categoryId, sectionId } = useParams();
 
@@ -186,7 +190,7 @@ export function DocsViewer() {
         className={section.title ? "mt-6 first:mt-0" : ""}
       >
         {section.title && (
-          <div className="px-3 py-2 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+          <div className="px-3 py-2 text-[11px] font-semibold text-[var(--docs-muted-foreground)] uppercase tracking-wider">
             {section.title}
           </div>
         )}
@@ -207,13 +211,13 @@ export function DocsViewer() {
                   }
                   className={`w-full text-left px-3 py-2 rounded-lg text-[14px] transition-colors flex items-center gap-2 ${
                     isActiveCategory
-                      ? "text-zinc-900"
-                      : "text-zinc-600 hover:text-zinc-900 hover:bg-white"
+                      ? "text-[var(--docs-sidebar-foreground)] font-medium"
+                      : "text-[var(--docs-muted-foreground)] hover:text-[var(--docs-sidebar-foreground)] hover:bg-[var(--docs-sidebar-accent)]"
                   }`}
                 >
                   {hasSingleSection ? (
                     <svg
-                      className={`size-3.5 flex-shrink-0 ${isActiveCategory ? "text-zinc-900" : "text-zinc-400"}`}
+                      className={`size-3.5 flex-shrink-0 ${isActiveCategory ? "text-[var(--docs-primary)]" : "text-[var(--docs-muted-foreground)]"}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -227,7 +231,7 @@ export function DocsViewer() {
                     </svg>
                   ) : (
                     <svg
-                      className={`size-3.5 text-zinc-400 transition-transform flex-shrink-0 ${isExpanded ? "rotate-90" : ""}`}
+                      className={`size-3.5 text-[var(--docs-muted-foreground)] transition-transform flex-shrink-0 ${isExpanded ? "rotate-90" : ""}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -249,7 +253,7 @@ export function DocsViewer() {
 
                 {isExpanded && !hasSingleSection && (
                   <div className="ml-5 mt-0.5 space-y-0.5 relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-zinc-200" />
+                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[var(--docs-border)]" />
                     {category.sections.map((sec, secIndex) => {
                       const isActive =
                         isActiveCategory && sectionIndex === secIndex;
@@ -259,12 +263,12 @@ export function DocsViewer() {
                           onClick={() => selectSection(catIndex, secIndex)}
                           className={`relative w-full text-left pl-3 pr-3 py-1.5 text-[13px] transition-colors ${
                             isActive
-                              ? "text-zinc-900 font-medium"
-                              : "text-zinc-500 hover:text-zinc-900"
+                              ? "text-[var(--docs-sidebar-foreground)] font-medium"
+                              : "text-[var(--docs-muted-foreground)] hover:text-[var(--docs-sidebar-foreground)]"
                           }`}
                         >
                           {isActive && (
-                            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-zinc-900" />
+                            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[var(--docs-primary)]" />
                           )}
                           {sec.title}
                         </button>
@@ -281,7 +285,11 @@ export function DocsViewer() {
   };
 
   return (
-    <div className="h-screen bg-white flex overflow-hidden">
+    <div
+      className="docs-root h-screen flex overflow-hidden bg-[var(--docs-background)]"
+      data-color-scheme={theme?.colorScheme && theme.colorScheme !== "system" ? theme.colorScheme : undefined}
+    >
+      {themeCSS && <style>{themeCSS}</style>}
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
@@ -290,7 +298,7 @@ export function DocsViewer() {
         storageKey={storageKey}
       />
 
-      <aside className="w-72 border-r border-zinc-100 overflow-y-auto flex-shrink-0 bg-zinc-50/50">
+      <aside className="w-72 border-r border-[var(--docs-sidebar-border)] overflow-y-auto flex-shrink-0 bg-[var(--docs-sidebar)]">
         <div className="p-5">
           <div className="flex items-center gap-2.5 mb-6 px-2">
             {logo ?? (
@@ -301,19 +309,19 @@ export function DocsViewer() {
               </div>
             )}
             <div>
-              <div className="font-semibold text-zinc-900 text-[15px]">
+              <div className="font-semibold text-[var(--docs-sidebar-foreground)] text-[15px]">
                 {title}
               </div>
-              <div className="text-[11px] text-zinc-500">{subtitle}</div>
+              <div className="text-[11px] text-[var(--docs-muted-foreground)]">{subtitle}</div>
             </div>
           </div>
 
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-white border border-zinc-200 rounded-lg hover:border-zinc-300 hover:bg-zinc-50 transition-colors text-left"
+            className="w-full flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-[var(--docs-card)] border border-[var(--docs-border)] rounded-lg hover:bg-[var(--docs-muted)] transition-colors text-left"
           >
             <svg
-              className="size-4 text-zinc-400 flex-shrink-0"
+              className="size-4 text-[var(--docs-muted-foreground)] flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -325,8 +333,8 @@ export function DocsViewer() {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <span className="flex-1 text-zinc-400">Search docs...</span>
-            <kbd className="px-1.5 py-0.5 text-[10px] font-medium text-zinc-400 bg-zinc-100 border border-zinc-200 rounded">
+            <span className="flex-1 text-[var(--docs-muted-foreground)]">Search docs...</span>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-medium text-[var(--docs-muted-foreground)] bg-[var(--docs-muted)] border border-[var(--docs-border)] rounded">
               {"\u2318"}K
             </kbd>
           </button>
@@ -339,15 +347,15 @@ export function DocsViewer() {
         <div className="max-w-[760px] mx-auto px-12 py-12">
           <div className="mb-8">
             {!isSingleSection && (
-              <div className="text-[13px] text-zinc-400 mb-2">
+              <div className="text-[13px] text-[var(--docs-muted-foreground)] mb-2">
                 {currentCategory.title} · Section {currentSection.number}
               </div>
             )}
-            <h1 className="text-[32px] font-semibold text-zinc-900 tracking-tight">
+            <h1 className="text-[32px] font-semibold text-[var(--docs-foreground)] tracking-tight">
               {isSingleSection ? currentCategory.title : currentSection.title}
             </h1>
             {currentSection.description && (
-              <p className="text-[15px] text-zinc-500 mt-2">
+              <p className="text-[15px] text-[var(--docs-muted-foreground)] mt-2">
                 {currentSection.description}
               </p>
             )}
@@ -359,7 +367,7 @@ export function DocsViewer() {
             onPageLink={handlePageLink}
           />
 
-          <div className="flex justify-between items-center mt-16 pt-8 border-t border-zinc-100">
+          <div className="flex justify-between items-center mt-16 pt-8 border-t border-[var(--docs-border)]">
             {(() => {
               const prev = getPrevSection();
               return prev ? (
@@ -369,10 +377,10 @@ export function DocsViewer() {
                   }
                   className="group flex flex-col items-start"
                 >
-                  <span className="text-[12px] text-zinc-400 mb-1">
+                  <span className="text-[12px] text-[var(--docs-muted-foreground)] mb-1">
                     Previous
                   </span>
-                  <span className="text-[14px] text-zinc-600 group-hover:text-zinc-900 transition-colors">
+                  <span className="text-[14px] text-[var(--docs-muted-foreground)] group-hover:text-[var(--docs-foreground)] transition-colors">
                     {"\u2190"} {prev.title}
                   </span>
                 </button>
@@ -389,8 +397,8 @@ export function DocsViewer() {
                   }
                   className="group flex flex-col items-end"
                 >
-                  <span className="text-[12px] text-zinc-400 mb-1">Next</span>
-                  <span className="text-[14px] text-zinc-600 group-hover:text-zinc-900 transition-colors">
+                  <span className="text-[12px] text-[var(--docs-muted-foreground)] mb-1">Next</span>
+                  <span className="text-[14px] text-[var(--docs-muted-foreground)] group-hover:text-[var(--docs-foreground)] transition-colors">
                     {next.title} {"\u2192"}
                   </span>
                 </button>
@@ -403,9 +411,9 @@ export function DocsViewer() {
       </main>
 
       {currentSection.subsections.length > 0 && (
-        <aside className="w-56 border-l border-zinc-100 overflow-y-auto flex-shrink-0">
+        <aside className="w-56 border-l border-[var(--docs-border)] overflow-y-auto flex-shrink-0">
           <div className="sticky top-0 p-6">
-            <div className="text-[12px] font-medium text-zinc-400 uppercase tracking-wider mb-4">
+            <div className="text-[12px] font-medium text-[var(--docs-muted-foreground)] uppercase tracking-wider mb-4">
               On this page
             </div>
             <nav className="space-y-1">
@@ -415,8 +423,8 @@ export function DocsViewer() {
                   onClick={() => scrollToSubSection(`section-${sub.id}`)}
                   className={`w-full text-left text-[13px] py-1.5 transition-colors ${
                     activeSubSection === `section-${sub.id}`
-                      ? "text-zinc-900 font-medium"
-                      : "text-zinc-400 hover:text-zinc-700"
+                      ? "text-[var(--docs-foreground)] font-medium"
+                      : "text-[var(--docs-muted-foreground)] hover:text-[var(--docs-foreground)]"
                   }`}
                 >
                   {sub.title}
@@ -442,7 +450,7 @@ function SectionContent({
   onPageLink: (path: string) => void;
 }) {
   return (
-    <div className="text-[15px] text-zinc-700 leading-relaxed">
+    <div className="text-[15px] text-[var(--docs-foreground)] leading-relaxed">
       {section.subsections.map((subsection) => (
         <SubSectionContent
           key={subsection.id}
@@ -468,7 +476,7 @@ function SubSectionContent({
     <section className="mt-10 first:mt-0">
       <h3
         id={`section-${subsection.id}`}
-        className="scroll-mt-20 text-[18px] font-semibold text-zinc-900 mb-4"
+        className="scroll-mt-20 text-[18px] font-semibold text-[var(--docs-foreground)] mb-4"
       >
         {subsection.title}
       </h3>

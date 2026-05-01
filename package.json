@@ -20,11 +20,11 @@
   },
   "dependencies": {
     "fuse.js": "^7.1.0",
-    "sugar-high": "^0.9.5",
-    "unified": "^11.0.5",
-    "remark-parse": "^11.0.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "sugar-high": "^0.9.5",
+    "unified": "^11.0.5",
     "yaml": "^2.7.1"
   }
 }

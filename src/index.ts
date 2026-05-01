@@ -1,5 +1,7 @@
 // Viewer
 export { DocsViewer, ContentRenderer, CommandPalette, useLinkPreview } from "./viewer";
+export { buildDocsContext } from "./viewer/search";
+export type { ChatMessage } from "./viewer/ai";
 export type { SearchResult } from "./viewer";
 
 // Context
@@ -16,4 +18,8 @@ export type {
   DocsCategory,
   SidebarSection,
   DocsConfig,
+  DocsAiConfig,
+  DocsEntityConfig,
+  DocsThemeConfig,
+  DocsThemeTokens,
 } from "./types";

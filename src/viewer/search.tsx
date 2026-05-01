@@ -161,3 +161,32 @@ export function addToSearchHistory(storageKey: string, result: SearchResult) {
 export function clearSearchHistory(storageKey: string) {
   localStorage.removeItem(storageKey);
 }
+
+export function buildDocsContext(categories: DocsCategory[]): string {
+  const filtered = categories.filter((cat) => !EXCLUDED_SECTIONS.has(cat.id));
+
+  const content = filtered
+    .map((cat) => {
+      const sections = cat.sections
+        .filter((s) => !EXCLUDED_SECTIONS.has(s.id))
+        .map((sec) => {
+          const subsections = sec.subsections
+            .map((sub) => `### ${sub.title}\n${extractText(sub.content)}`)
+            .join("\n\n");
+          return `## ${sec.title}${sec.description ? "\n" + sec.description : ""}\n\n${subsections}`;
+        })
+        .join("\n\n");
+      return `# ${cat.title}\n\n${sections}`;
+    })
+    .join("\n\n---\n\n");
+
+  const pathMap = filtered
+    .flatMap((cat) =>
+      cat.sections
+        .filter((s) => !EXCLUDED_SECTIONS.has(s.id))
+        .map((sec) => `- [${sec.title}](${cat.id}/${sec.id})`)
+    )
+    .join("\n");
+
+  return `${content}\n\n---\n\nAvailable doc links (use exact paths when citing):\n${pathMap}`;
+}

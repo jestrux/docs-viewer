@@ -1,5 +1,61 @@
+/* Docs viewer root — default neutral palette */
+.docs-root {
+  --docs-background: #ffffff;
+  --docs-foreground: #18181b;
+  --docs-card: #ffffff;
+  --docs-card-foreground: #18181b;
+  --docs-primary: #4f46e5;
+  --docs-primary-foreground: #ffffff;
+  --docs-muted: #f4f4f5;
+  --docs-muted-foreground: #71717a;
+  --docs-border: #e4e4e7;
+  --docs-sidebar: rgba(250, 250, 250, 0.5);
+  --docs-sidebar-foreground: #18181b;
+  --docs-sidebar-border: #f4f4f5;
+  --docs-sidebar-accent: #f4f4f5;
+  --docs-sidebar-accent-foreground: #18181b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .docs-root:not([data-color-scheme="light"]) {
+    --docs-background: #09090b;
+    --docs-foreground: #fafafa;
+    --docs-card: #18181b;
+    --docs-card-foreground: #fafafa;
+    --docs-primary: #818cf8;
+    --docs-primary-foreground: #ffffff;
+    --docs-muted: #27272a;
+    --docs-muted-foreground: #a1a1aa;
+    --docs-border: #3f3f46;
+    --docs-sidebar: rgba(20, 20, 23, 0.5);
+    --docs-sidebar-foreground: #fafafa;
+    --docs-sidebar-border: #27272a;
+    --docs-sidebar-accent: #27272a;
+    --docs-sidebar-accent-foreground: #fafafa;
+  }
+}
+
+.docs-root[data-color-scheme="dark"] {
+  --docs-background: #09090b;
+  --docs-foreground: #fafafa;
+  --docs-card: #18181b;
+  --docs-card-foreground: #fafafa;
+  --docs-primary: #818cf8;
+  --docs-primary-foreground: #ffffff;
+  --docs-muted: #27272a;
+  --docs-muted-foreground: #a1a1aa;
+  --docs-border: #3f3f46;
+  --docs-sidebar: rgba(20, 20, 23, 0.5);
+  --docs-sidebar-foreground: #fafafa;
+  --docs-sidebar-border: #27272a;
+  --docs-sidebar-accent: #27272a;
+  --docs-sidebar-accent-foreground: #fafafa;
+}
+
 /* Sugar High syntax highlighting - dark theme */
 :root {
+  color-scheme: light dark;
+
   --sh-class: #e5c07b;
   --sh-identifier: #e06c75;
   --sh-sign: #abb2bf;
@@ -23,9 +79,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
+  background: light-dark(#d4d4d8, #3f3f46);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+  background: light-dark(#a1a1aa, #52525b);
 }
