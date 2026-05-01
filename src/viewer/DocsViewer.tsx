@@ -11,6 +11,7 @@ import {
 } from "./search";
 import { CommandPalette } from "./CommandPalette";
 import { useLinkPreview } from "./LinkPreviewPopover";
+import { useFavicon } from "./favicon";
 
 export function DocsViewer() {
   const {
@@ -21,9 +22,11 @@ export function DocsViewer() {
     logo,
     basePath = "",
     theme,
+    favicon,
   } = useDocs();
 
   const themeCSS = useMemo(() => theme ? buildDerivedThemeCSS(theme) : "", [theme]);
+  useFavicon(favicon);
   const navigate = useNavigate();
   const { categoryId, sectionId } = useParams();
 

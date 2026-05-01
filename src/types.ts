@@ -124,4 +124,6 @@ export interface DocsConfig {
   entities?: DocsEntityConfig[];
   /** Theme configuration. Pass primary color for auto-derived palette, or full token sets. */
   theme?: DocsThemeConfig;
+  /** Favicon. Accepts a React node (SVG element), a single URL string, or { light, dark } URLs. */
+  favicon?: React.ReactNode | string | { light: string; dark: string };
 }
