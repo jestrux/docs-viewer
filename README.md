@@ -254,6 +254,26 @@ export const docsConfig: DocsConfig = {
 
 Without `logo`, the sidebar defaults to a dark square with the first letter of `title`.
 
+### Favicon
+
+Pass a `favicon` in config — accepts a React node (SVG element), a single URL string, or `{ light, dark }` URLs for automatic dark mode switching:
+
+```ts
+// React node — SVG handles its own dark/light via @media (prefers-color-scheme)
+favicon: <MyLogoSvg />,
+
+// Single URL
+favicon: "/favicon.svg",
+
+// Light + dark URLs — swaps automatically based on system color scheme
+favicon: {
+  light: `${import.meta.env.BASE_URL}favicon.svg`,
+  dark: `${import.meta.env.BASE_URL}favicon-dark.svg`,
+},
+```
+
+The library injects a `<link rel="icon">` into `<head>` and keeps it in sync with color scheme changes. For the React node path, `currentColor` won't work in favicons (no DOM context) — embed `@media (prefers-color-scheme: dark)` inside the SVG instead.
+
 ### Sidebar sections and grouping
 
 `organizeSidebar` arranges categories into labelled groups:
@@ -553,6 +573,7 @@ import "@jestrux/docs-viewer/styles";
 | `ai` | `true \| DocsAiConfig` | No | Enable AI Q&A. Omit to disable |
 | `entities` | `DocsEntityConfig[]` | No | Quick-jump entries in the command palette |
 | `theme` | `DocsThemeConfig` | No | Custom color palette — see [Theming](#theming) |
+| `favicon` | `ReactNode \| string \| { light: string; dark: string }` | No | Favicon — React node (SVG), URL string, or light/dark URL pair |
 | `defaultRoute` | `string` | No | Default redirect path |
 
 ---
