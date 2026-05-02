@@ -312,7 +312,7 @@ export function DocsViewer() {
 
       <button
         onClick={() => setIsCommandPaletteOpen(true)}
-        className="w-full flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-[var(--docs-card)] border border-[var(--docs-border)] rounded-lg hover:bg-[var(--docs-muted)] transition-colors text-left"
+        className="w-full hidden lg:flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-[var(--docs-card)] border border-[var(--docs-border)] rounded-lg hover:bg-[var(--docs-muted)] transition-colors text-left"
       >
         <svg className="size-4 text-[var(--docs-muted-foreground)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
