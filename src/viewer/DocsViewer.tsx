@@ -12,6 +12,7 @@ import {
 import { CommandPalette } from "./CommandPalette";
 import { useLinkPreview } from "./LinkPreviewPopover";
 import { useFavicon } from "./favicon";
+import { useMediaQuery } from "./hooks";
 
 export function DocsViewer() {
   const {
@@ -31,6 +32,8 @@ export function DocsViewer() {
   const { categoryId, sectionId } = useParams();
 
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const fuse = useMemo(() => createSearchInstance(categories), [categories]);
   const sectionMap = useMemo(() => buildSectionMap(categories), [categories]);
@@ -125,6 +128,7 @@ export function DocsViewer() {
     const sec = cat.sections[secIndex];
     navigate(`${basePath}/${cat.id}/${sec.id}`);
     setActiveSubSection(null);
+    setIsSidebarOpen(false);
   };
 
   const getNextSection = () => {
@@ -182,7 +186,8 @@ export function DocsViewer() {
   const linkPreviewPopover = useLinkPreview(
     categories,
     contentRef,
-    handlePageLink
+    handlePageLink,
+    isDesktop
   );
 
   const renderSidebar = () => {
@@ -287,6 +292,41 @@ export function DocsViewer() {
     ));
   };
 
+  const sidebarContent = (
+    <div className="p-5">
+      <div className="flex items-center gap-2.5 mb-6 px-2">
+        {logo ?? (
+          <div className="size-8 rounded-lg bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center shadow-sm">
+            <span className="text-white text-[13px] font-bold">
+              {title.charAt(0)}
+            </span>
+          </div>
+        )}
+        <div>
+          <div className="font-semibold text-[var(--docs-sidebar-foreground)] text-[15px]">
+            {title}
+          </div>
+          <div className="text-[11px] text-[var(--docs-muted-foreground)]">{subtitle}</div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setIsCommandPaletteOpen(true)}
+        className="w-full flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-[var(--docs-card)] border border-[var(--docs-border)] rounded-lg hover:bg-[var(--docs-muted)] transition-colors text-left"
+      >
+        <svg className="size-4 text-[var(--docs-muted-foreground)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <span className="flex-1 text-[var(--docs-muted-foreground)]">Search docs...</span>
+        <kbd className="px-1.5 py-0.5 text-[10px] font-medium text-[var(--docs-muted-foreground)] bg-[var(--docs-muted)] border border-[var(--docs-border)] rounded hidden lg:inline">
+          {"\u2318"}K
+        </kbd>
+      </button>
+
+      <nav className="space-y-1">{renderSidebar()}</nav>
+    </div>
+  );
+
   return (
     <div
       className="docs-root h-screen flex overflow-hidden bg-[var(--docs-background)]"
@@ -301,60 +341,59 @@ export function DocsViewer() {
         storageKey={storageKey}
       />
 
-      <aside className="w-72 border-r border-[var(--docs-sidebar-border)] overflow-y-auto flex-shrink-0 bg-[var(--docs-sidebar)]">
-        <div className="p-5">
-          <div className="flex items-center gap-2.5 mb-6 px-2">
-            {logo ?? (
-              <div className="size-8 rounded-lg bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center shadow-sm">
-                <span className="text-white text-[13px] font-bold">
-                  {title.charAt(0)}
-                </span>
-              </div>
-            )}
-            <div>
-              <div className="font-semibold text-[var(--docs-sidebar-foreground)] text-[15px]">
-                {title}
-              </div>
-              <div className="text-[11px] text-[var(--docs-muted-foreground)]">{subtitle}</div>
+      {/* Mobile header */}
+      <div className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 flex items-center justify-between px-4 border-b border-[var(--docs-sidebar-border)] bg-[var(--docs-sidebar)]">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="size-9 flex items-center justify-center rounded-lg text-[var(--docs-muted-foreground)] hover:bg-[var(--docs-sidebar-accent)] transition-colors"
+        >
+          <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div className="flex items-center gap-2">
+          {logo ?? (
+            <div className="size-7 rounded-md bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center">
+              <span className="text-white text-[11px] font-bold">{title.charAt(0)}</span>
             </div>
-          </div>
-
-          <button
-            onClick={() => setIsCommandPaletteOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-2 mb-6 text-[13px] bg-[var(--docs-card)] border border-[var(--docs-border)] rounded-lg hover:bg-[var(--docs-muted)] transition-colors text-left"
-          >
-            <svg
-              className="size-4 text-[var(--docs-muted-foreground)] flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <span className="flex-1 text-[var(--docs-muted-foreground)]">Search docs...</span>
-            <kbd className="px-1.5 py-0.5 text-[10px] font-medium text-[var(--docs-muted-foreground)] bg-[var(--docs-muted)] border border-[var(--docs-border)] rounded">
-              {"\u2318"}K
-            </kbd>
-          </button>
-
-          <nav className="space-y-1">{renderSidebar()}</nav>
+          )}
+          <span className="font-semibold text-[var(--docs-sidebar-foreground)] text-[14px]">{title}</span>
         </div>
+        <button
+          onClick={() => setIsCommandPaletteOpen(true)}
+          className="size-9 flex items-center justify-center rounded-lg text-[var(--docs-muted-foreground)] hover:bg-[var(--docs-sidebar-accent)] transition-colors"
+        >
+          <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile sidebar backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto w-72 border-r border-[var(--docs-sidebar-border)] overflow-y-auto flex-shrink-0 bg-[var(--docs-sidebar)] transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        {sidebarContent}
       </aside>
 
-      <main ref={contentRef} className="flex-1 overflow-y-auto">
-        <div className="max-w-[760px] mx-auto px-12 py-12">
+      {/* Main content */}
+      <main ref={contentRef} className="flex-1 overflow-y-auto pt-14 lg:pt-0">
+        <div className="max-w-[760px] mx-auto px-4 md:px-8 lg:px-12 py-8 lg:py-12">
           <div className="mb-8">
             {!isSingleSection && (
               <div className="text-[13px] text-[var(--docs-muted-foreground)] mb-2">
                 {currentCategory.title} · Section {currentSection.number}
               </div>
             )}
-            <h1 className="text-[32px] font-semibold text-[var(--docs-foreground)] tracking-tight">
+            <h1 className="text-[26px] md:text-[32px] font-semibold text-[var(--docs-foreground)] tracking-tight">
               {isSingleSection ? currentCategory.title : currentSection.title}
             </h1>
             {currentSection.description && (
@@ -374,47 +413,32 @@ export function DocsViewer() {
             {(() => {
               const prev = getPrevSection();
               return prev ? (
-                <button
-                  onClick={() =>
-                    selectSection(prev.categoryIndex, prev.sectionIndex)
-                  }
-                  className="group flex flex-col items-start"
-                >
-                  <span className="text-[12px] text-[var(--docs-muted-foreground)] mb-1">
-                    Previous
-                  </span>
+                <button onClick={() => selectSection(prev.categoryIndex, prev.sectionIndex)} className="group flex flex-col items-start">
+                  <span className="text-[12px] text-[var(--docs-muted-foreground)] mb-1">Previous</span>
                   <span className="text-[14px] text-[var(--docs-muted-foreground)] group-hover:text-[var(--docs-foreground)] transition-colors">
                     {"\u2190"} {prev.title}
                   </span>
                 </button>
-              ) : (
-                <div />
-              );
+              ) : <div />;
             })()}
             {(() => {
               const next = getNextSection();
               return next ? (
-                <button
-                  onClick={() =>
-                    selectSection(next.categoryIndex, next.sectionIndex)
-                  }
-                  className="group flex flex-col items-end"
-                >
+                <button onClick={() => selectSection(next.categoryIndex, next.sectionIndex)} className="group flex flex-col items-end">
                   <span className="text-[12px] text-[var(--docs-muted-foreground)] mb-1">Next</span>
                   <span className="text-[14px] text-[var(--docs-muted-foreground)] group-hover:text-[var(--docs-foreground)] transition-colors">
                     {next.title} {"\u2192"}
                   </span>
                 </button>
-              ) : (
-                <div />
-              );
+              ) : <div />;
             })()}
           </div>
         </div>
       </main>
 
+      {/* On this page — desktop only */}
       {currentSection.subsections.length > 0 && (
-        <aside className="w-56 border-l border-[var(--docs-border)] overflow-y-auto flex-shrink-0">
+        <aside className="hidden lg:block w-56 border-l border-[var(--docs-border)] overflow-y-auto flex-shrink-0">
           <div className="sticky top-0 p-6">
             <div className="text-[12px] font-medium text-[var(--docs-muted-foreground)] uppercase tracking-wider mb-4">
               On this page

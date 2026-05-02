@@ -90,7 +90,8 @@ function computePosition(
 export function useLinkPreview(
   categories: DocsCategory[],
   contentRef: React.RefObject<HTMLDivElement | null>,
-  onNavigate?: (path: string) => void
+  onNavigate?: (path: string) => void,
+  enabled = true
 ) {
   const [preview, setPreview] = useState<{
     data: PreviewData;
@@ -136,6 +137,7 @@ export function useLinkPreview(
   }, [preview, contentRef]);
 
   useEffect(() => {
+    if (!enabled) return;
     const container = contentRef.current;
     if (!container) return;
 
@@ -184,9 +186,9 @@ export function useLinkPreview(
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
       if (leaveTimeoutRef.current) clearTimeout(leaveTimeoutRef.current);
     };
-  }, [contentRef, showPreview, hidePreview]);
+  }, [contentRef, showPreview, hidePreview, enabled]);
 
-  if (!preview) return null;
+  if (!enabled || !preview) return null;
 
   const handleNavigate = () => {
     if (onNavigate) {

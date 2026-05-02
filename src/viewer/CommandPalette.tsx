@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useMediaQuery } from "./hooks";
 import type Fuse from "fuse.js";
 import { useNavigate } from "react-router-dom";
 import { useDocs } from "../context";
@@ -28,6 +29,7 @@ interface CommandPaletteProps {
   onSelect: (result: SearchResult) => void;
   fuse: Fuse<any>;
   storageKey: string;
+  isMobile?: boolean;
 }
 
 export function CommandPalette({
@@ -38,16 +40,42 @@ export function CommandPalette({
   storageKey,
 }: CommandPaletteProps) {
   const [hasOpened, setHasOpened] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   useEffect(() => {
     if (isOpen) setHasOpened(true);
   }, [isOpen]);
 
   if (!hasOpened) return null;
+
+  if (isMobile) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex flex-col bg-[var(--docs-background)]"
+        style={{
+          transform: isOpen ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.28s cubic-bezier(0.4, 0, 0.2, 1)",
+          pointerEvents: isOpen ? "auto" : "none",
+        }}
+      >
+        <CommandPaletteContent
+          isOpen={isOpen}
+          onClose={onClose}
+          isMobile={true}
+          onSelect={onSelect}
+          fuse={fuse}
+          storageKey={storageKey}
+        />
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: isOpen ? undefined : "none" }}>
       <CommandPaletteContent
         isOpen={isOpen}
         onClose={onClose}
+        isMobile={false}
         onSelect={onSelect}
         fuse={fuse}
         storageKey={storageKey}
@@ -135,6 +163,7 @@ function CommandPaletteContent({
   onSelect,
   fuse,
   storageKey,
+  isMobile = false,
 }: CommandPaletteProps) {
   const { ai, entities, categories, basePath = "" } = useDocs();
   const navigate = useNavigate();
@@ -943,7 +972,7 @@ function CommandPaletteContent({
   // ── Render: answer mode (chat) ──────────────────────────────────────────
 
   const renderAnswerMode = () => (
-    <div className="flex flex-col h-[75vh]">
+    <div className={`flex flex-col ${isMobile ? "h-full" : "h-[75vh]"}`}>
       {/* Header — Ask AI badge */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--docs-border)] shrink-0">
         <button
@@ -1073,6 +1102,16 @@ function CommandPaletteContent({
       </div>
     </div>
   );
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full bg-[var(--docs-card)]">
+        {mode === "search" && renderSearchMode()}
+        {mode === "api-key" && renderApiKeyMode()}
+        {mode === "answer" && renderAnswerMode()}
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[8vh]">
