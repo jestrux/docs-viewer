@@ -4,6 +4,8 @@ A React component library that turns a folder of Markdown files into a fully-fea
 
 No build step. Ships raw TypeScript source, consumed directly by Vite or any bundler that handles `.ts` imports.
 
+**[Live demo](https://jestrux.github.io/docs-viewer/)** · **[Example source](examples/payment-api)**
+
 ---
 
 ## Install
