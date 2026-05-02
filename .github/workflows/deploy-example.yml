@@ -23,8 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: examples/payment-api/package-lock.json
+
+      - run: npm install
 
       - run: npm install
         working-directory: examples/payment-api
